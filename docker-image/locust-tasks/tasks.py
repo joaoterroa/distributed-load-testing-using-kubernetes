@@ -37,7 +37,6 @@ class MetricsTaskSet(TaskSet):
     def get_station(self):
         self.client.get(
             "/station",
-            name="/station",
             headers={
                 "accept": "application/json",
             },
@@ -49,7 +48,6 @@ class MetricsTaskSet(TaskSet):
         user_longitude = self.longitude
         self.client.get(
             f"/routes/station?user_latitude={user_latitude}&user_longitude={user_longitude}",
-            name="/routes/station",
             headers={
                 "accept": "application/json",
             },
@@ -61,7 +59,6 @@ class MetricsTaskSet(TaskSet):
         station_destination = self.destination
         self.client.get(
             f"/routes?origin={station_origin}&destination={station_destination}",
-            name="/routes",
             headers={
                 "accept": "application/json",
                 "Authorization": f"Bearer {self.token}",
@@ -72,7 +69,6 @@ class MetricsTaskSet(TaskSet):
     def get_history(self):
         self.client.get(
             "/get_history",
-            name="/get_history",
             headers={
                 "accept": "application/json",
                 "Authorization": f"Bearer {self.token}",

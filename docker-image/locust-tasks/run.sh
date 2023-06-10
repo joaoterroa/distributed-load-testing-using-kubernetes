@@ -24,17 +24,16 @@ ACCESS_TOKEN=$(curl --request POST \
     --url 'https://cn-fastapi.eu.auth0.com/oauth/token' \
     --header 'content-type: application/x-www-form-urlencoded' \
     --data grant_type=password \
-    --data '{
-    "grant_type": "password",
-    "username": "locust-testing@gmail.com",
-    "password": "Locust123",
-    "audience": "https://35.204.122.1/",
-    "scope": "openid profile email",
-    "client_id": "mcB5TZfpzDxCmtX4KKMVQsq7V6Lt9gUD",
-    "client_secret": "M9448pplh5s3DGCnCx8Yy3sCpuPFo5EWTxk0JeSKLdFnehdwlvMu5gem8RzMHIcI"
-    }' | jq -r '.access_token'
+    --data grant_type: password \
+    --data username: locust-testing@gmail.com \
+    --data password: Locust123 \
+    --data audience: https://35.204.122.1 \
+    --data scope: openid profile email \
+    --data client_id: mcB5TZfpzDxCmtX4KKMVQsq7V6Lt9gUD \
+    --data client_secret: M9448pplh5s3DGCnCx8Yy3sCpuPFo5EWTxk0JeSKLdFnehdwlvMu5gem8RzMHIcI | jq -r '.access_token'
 )
 export TOKEN="$ACCESS_TOKEN"
+echo $TOKEN
 
 if [[ "$LOCUST_MODE" = "master" ]]; then
     LOCUS_OPTS="$LOCUS_OPTS --master"
