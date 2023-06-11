@@ -21,32 +21,34 @@ import json
 
 # [START locust_test_task]
 
+url = "https://cn-fastapi.eu.auth0.com/oauth/token"
+headers = {"content-type": "application/x-www-form-urlencoded"}
+data = {
+    "grant_type": "password",
+    "username": "locust-testing@gmail.com",
+    "password": "Locust123",
+    "audience": "https://cn-fastapi.com",
+    "scope": "openid profile email",
+    "client_id": "mcB5TZfpzDxCmtX4KKMVQsq7V6Lt9gUD",
+    "client_secret": "M9448pplh5s3DGCnCx8Yy3sCpuPFo5EWTxk0JeSKLdFnehdwlvMu5gem8RzMHIcI",
+}
+
+response = requests.post(url, headers=headers, data=data)
+
+response_dict = json.loads(response.text)
+access_token = response_dict["access_token"]
+
 
 class MetricsTaskSet(TaskSet):
     _deviceid = None
     latitude = "40.7738794"
     longitude = "-73.975149"
-    origin = r"Flushing%20Ave%20and%20Vanderbilt%20Ave"
-    destination = r"Vernon%20Blvd%20and%2047%20Rd"
-    url = "https://cn-fastapi.eu.auth0.com/oauth/token"
-    headers = {"content-type": "application/x-www-form-urlencoded"}
-    data = {
-        "grant_type": "password",
-        "username": "locust-testing@gmail.com",
-        "password": "Locust123",
-        "audience": "https://cn-fastapi.com",
-        "scope": "openid profile email",
-        "client_id": "mcB5TZfpzDxCmtX4KKMVQsq7V6Lt9gUD",
-        "client_secret": "M9448pplh5s3DGCnCx8Yy3sCpuPFo5EWTxk0JeSKLdFnehdwlvMu5gem8RzMHIcI",
-    }
-
-    response = requests.post(url, headers=headers, data=data)
-
-    response_dict = json.loads(response.text)
-    access_token = response_dict["access_token"]
+    origin = "Flushing Ave and Vanderbilt Ave"
+    destination = "Vernon Blvd and 47 Rd"
 
     def on_start(self):
         self._deviceid = str(uuid.uuid4())
+        self.access_token = access_token
 
     @task
     def get_station(self):
@@ -70,13 +72,12 @@ class MetricsTaskSet(TaskSet):
 
     @task
     def get_route(self):
-        station_origin = self.origin
-        station_destination = self.destination
+        station_origin = requests.utils.quote(self.origin)
+        station_destination = requests.utils.quote(self.destination)
         self.client.get(
             f"/routes?origin={station_origin}&destination={station_destination}",
             headers={
-                "accept": "application/json",
-                "Authorization": f"Bearer {self.access_token}",
+                "authorization": f"Bearer {self.access_token}",
             },
             verify=False,
         )
@@ -86,8 +87,7 @@ class MetricsTaskSet(TaskSet):
         self.client.get(
             "/get_history",
             headers={
-                "accept": "application/json",
-                "Authorization": f"Bearer {self.access_token}",
+                "authorization": f"Bearer {self.access_token}",
             },
             verify=False,
         )
