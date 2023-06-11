@@ -18,8 +18,8 @@
 LOCUST="/usr/local/bin/locust"
 LOCUS_OPTS="-f /locust-tasks/tasks.py --host=$TARGET_HOST"
 LOCUST_MODE=${LOCUST_MODE:-standalone}
-apt update
-apt install jq -y
+sudo apt update
+sudo apt install jq -y
 ACCESS_TOKEN=$(curl --request POST \
     --url 'https://cn-fastapi.eu.auth0.com/oauth/token' \
     --header 'content-type: application/x-www-form-urlencoded' \
