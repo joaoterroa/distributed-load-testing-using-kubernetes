@@ -20,26 +20,26 @@ from flask import Flask, request
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route("/")
 def root():
     return 'Welcome to the "Distributed Load Testing Using Kubernetes" sample web app\n'
 
-# [START sample_app_endpoints]
-@app.route('/login',  methods=['GET', 'POST'])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    deviceid = request.values.get('deviceid')
-    return '/login - device: {}\n'.format(deviceid)
+    deviceid = request.values.get("deviceid")
+    return "/login - device: {}\n".format(deviceid)
 
-@app.route('/metrics',  methods=['GET', 'POST'])
+
+@app.route("/metrics", methods=["GET", "POST"])
 def metrics():
-    deviceid = request.values.get('deviceid')
-    timestamp = request.values.get('timestamp')
+    deviceid = request.values.get("deviceid")
+    timestamp = request.values.get("timestamp")
 
-    return '/metrics - device: {}, timestamp: {}\n'.format(deviceid, timestamp)
-# [END sample_app_endpoints]
+    return "/metrics - device: {}, timestamp: {}\n".format(deviceid, timestamp)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
@@ -47,4 +47,4 @@ if __name__ == '__main__':
     # the "static" directory. See:
     # http://flask.pocoo.org/docs/1.0/quickstart/#static-files. Once deployed,
     # App Engine itself will serve those files as configured in app.yaml.
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host="127.0.0.1", port=8080, debug=True)
