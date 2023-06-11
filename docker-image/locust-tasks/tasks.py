@@ -15,23 +15,38 @@
 # limitations under the License.
 
 import uuid
-import os
 from locust import FastHttpUser, TaskSet, task
+import requests
+import json
 
 # [START locust_test_task]
 
 
 class MetricsTaskSet(TaskSet):
     _deviceid = None
-    token = None
     latitude = "40.7738794"
     longitude = "-73.975149"
-    origin = "Flushing Ave and Vanderbilt Ave"
-    destination = "Vernon Blvd and 47 Rd"
+    origin = r"Flushing%20Ave%20and%20Vanderbilt%20Ave"
+    destination = r"Vernon%20Blvd%20and%2047%20Rd"
+    url = "https://cn-fastapi.eu.auth0.com/oauth/token"
+    headers = {"content-type": "application/x-www-form-urlencoded"}
+    data = {
+        "grant_type": "password",
+        "username": "locust-testing@gmail.com",
+        "password": "Locust123",
+        "audience": "https://cn-fastapi.com",
+        "scope": "openid profile email",
+        "client_id": "mcB5TZfpzDxCmtX4KKMVQsq7V6Lt9gUD",
+        "client_secret": "M9448pplh5s3DGCnCx8Yy3sCpuPFo5EWTxk0JeSKLdFnehdwlvMu5gem8RzMHIcI",
+    }
+
+    response = requests.post(url, headers=headers, data=data)
+
+    response_dict = json.loads(response.text)
+    access_token = response_dict["access_token"]
 
     def on_start(self):
         self._deviceid = str(uuid.uuid4())
-        self.token = os.getenv("TOKEN", "NULL")
 
     @task
     def get_station(self):
@@ -61,8 +76,9 @@ class MetricsTaskSet(TaskSet):
             f"/routes?origin={station_origin}&destination={station_destination}",
             headers={
                 "accept": "application/json",
-                "Authorization": f"Bearer {self.token}",
+                "Authorization": f"Bearer {self.access_token}",
             },
+            verify=False,
         )
 
     @task
@@ -71,8 +87,9 @@ class MetricsTaskSet(TaskSet):
             "/get_history",
             headers={
                 "accept": "application/json",
-                "Authorization": f"Bearer {self.token}",
+                "Authorization": f"Bearer {self.access_token}",
             },
+            verify=False,
         )
 
 
